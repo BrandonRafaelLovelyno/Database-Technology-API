@@ -1,16 +1,12 @@
 const express = require("express");
-const { Pool } = require("pg");
+const morgan = require("morgan");
+const { pool } = require("./db");
 
 const app = express();
 const port = 3000;
 
-const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "Good Reading Bookstore",
-  password: "pribadi80",
-  port: 5432,
-});
+const errorHandler = require("./middleware/errorHandler");
+const router = require("./router");
 
 pool.connect((err) => {
   if (err) {
@@ -20,6 +16,21 @@ pool.connect((err) => {
   }
 });
 
+app.use(morgan("dev"));
+
+app.use("/", router());
+
+app.use(errorHandler);
+
 app.listen(port, () => {
   console.log(`App running on http://localhost:${port}`);
 });
+
+module.exports = {
+  query: (text, params, callback) => {
+    return pool.query(text, params, callback);
+  },
+  close: () => {
+    return pool.end();
+  },
+};

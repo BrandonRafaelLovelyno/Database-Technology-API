@@ -15,6 +15,17 @@ const addReview = async (req, res, next) => {
   }
 };
 
+const deleteReview = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await sql.Delete({ table: "review", conditions: `id = ${id}` });
+    res.status(200).send("Review deleted");
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   addReview,
+  deleteReview,
 };

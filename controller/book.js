@@ -9,7 +9,7 @@ const getBook = async (req, res, next) => {
     });
 
     const books = await sql.Select({ table: "boo", conditions });
-    res.json(books);
+    res.status(200).json(books);
   } catch (err) {
     next(err);
   }

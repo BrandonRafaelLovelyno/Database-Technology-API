@@ -7,6 +7,7 @@ const port = 3000;
 
 const errorHandler = require("./middleware/errorHandler");
 const router = require("./router");
+const bodyParser = require("body-parser");
 
 pool.connect((err) => {
   if (err) {
@@ -17,6 +18,7 @@ pool.connect((err) => {
 });
 
 app.use(morgan("dev"));
+app.use(bodyParser.json());
 
 app.use("/", router());
 

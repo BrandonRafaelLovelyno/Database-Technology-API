@@ -1,4 +1,5 @@
 const { query } = require("../db/index.js");
+const { pool } = require("../db/index.js");
 
 const Select = ({ table, conditions }) =>
   new Promise((resolve, reject) => {
@@ -49,9 +50,26 @@ const Delete = ({ table, conditions }) =>
     );
   });
 
+const Transaction = async (queries) => {
+  try {
+    const client = await pool.connect();
+    await client.query("BEGIN");
+    queries.forEach(async (query) => {
+      await client.query(query);
+    });
+    await client.query("COMMIT");
+    client.release();
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.log(err);
+    throw err;
+  }
+};
+
 module.exports = {
   Select,
   Update,
   Insert,
   Delete,
+  Transaction,
 };

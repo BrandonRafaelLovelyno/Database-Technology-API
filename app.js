@@ -9,7 +9,7 @@ const errorHandler = require("./middleware/errorHandler");
 const router = require("./router");
 const bodyParser = require("body-parser");
 
-pool.connect((err) => {
+pool.connect((err, cli) => {
   if (err) {
     console.error("Error connecting to the database", err.stack);
   } else {
@@ -27,7 +27,6 @@ app.use(errorHandler);
 app.listen(port, () => {
   console.log(`App running on http://localhost:${port}`);
 });
-
 module.exports = {
   query: (text, params, callback) => {
     return pool.query(text, params, callback);

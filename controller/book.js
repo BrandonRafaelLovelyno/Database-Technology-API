@@ -29,7 +29,38 @@ const buyBook = async (req, res, next) => {
   }
 };
 
+const insertBook = async (req, res, next) => {
+  try {
+    const { book, author_id, category_id } = req.body;
+    const book_query = {
+      attribute: "(",
+      value: "(",
+    };
+
+    Object.keys(book).forEach((key) => {
+      book_query.attribute += `${key}, `;
+      book_query.value += `'${book[key]}', `;
+    });
+
+    book_query.attribute = book_query.attribute.slice(0, -2) + ")";
+    book_query.value = book_query.value.slice(0, -2) + ")";
+
+    const queries = [
+      `INSERT INTO book ${book_query.attribute} VALUES ${book_query.value}`,
+      `INSERT INTO book_written (book_id, author_id) VALUES (currval('book_id_seq'), ${author_id})`,
+      `INSERT INTO book_categorized (book_id, category_id) VALUES (currval('book_id_seq'), ${category_id})`,
+    ];
+
+    await sql.Transaction(queries);
+
+    res.status(201).send("Book added");
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getBook,
   buyBook,
+  insertBook,
 };

@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+require("dotenv").config();
 const { pool } = require("./db");
 
 const app = express();

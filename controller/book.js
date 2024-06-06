@@ -9,6 +9,10 @@ const getBook = async (req, res, next) => {
     });
 
     const books = await sql.Select({ table: "book", conditions });
+    if (books.length === 0) {
+      res.status(404);
+      throw new Error("No book found");
+    }
     res.status(200).json(books);
   } catch (err) {
     next(err);
@@ -18,6 +22,26 @@ const getBook = async (req, res, next) => {
 const buyBook = async (req, res, next) => {
   try {
     const { customer_id, book_id, quantity } = req.body;
+    const book = await sql.Select({
+      table: "book",
+      conditions: `id = ${book_id}`,
+    });
+    if (book.length === 0) {
+      res.status(404);
+      throw new Error("Book not found");
+    }
+    if (book[0].quantity < quantity) {
+      res.status(400);
+      throw new Error("Not enough book in stock");
+    }
+    const customer = await sql.Select({
+      table: "customer",
+      conditions: `id = ${customer_id}`,
+    });
+    if (customer.length === 0) {
+      res.status(404);
+      throw new Error("Customer not found");
+    }
     const querys = [
       `UPDATE book SET quantity = quantity - ${quantity} WHERE id = ${book_id}`,
       `INSERT INTO book_bought (customer_id, book_id, quantity,buy_date) VALUES (${customer_id}, ${book_id}, ${quantity},NOW())`,
@@ -32,6 +56,22 @@ const buyBook = async (req, res, next) => {
 const insertBook = async (req, res, next) => {
   try {
     const { book, author_id, category_id } = req.body;
+    const author = await sql.Select({
+      table: "author",
+      conditions: `id = ${author_id}`,
+    });
+    if (author.length === 0) {
+      res.status(404);
+      throw new Error("Author not found");
+    }
+    const category = await sql.Select({
+      table: "category",
+      conditions: `id = ${category_id}`,
+    });
+    if (category.length === 0) {
+      res.status(404);
+      throw new Error("Category not found");
+    }
     const book_query = {
       attribute: "(",
       value: "(",

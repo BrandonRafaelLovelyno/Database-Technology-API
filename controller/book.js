@@ -8,7 +8,7 @@ const getBook = async (req, res, next) => {
       conditions += `${key} = 'AND ${req.query[key]} '`;
     });
 
-    const books = await sql.Select({ table: "boo", conditions });
+    const books = await sql.Select({ table: "book", conditions });
     res.status(200).json(books);
   } catch (err) {
     next(err);
@@ -19,7 +19,7 @@ const buyBook = async (req, res, next) => {
   try {
     const { customer_id, book_id, quantity } = req.body;
     const querys = [
-      `UPDATE book SET quantity = quantity - ${quantity} WHERE book_id = ${book_id}`,
+      `UPDATE book SET quantity = quantity - ${quantity} WHERE id = ${book_id}`,
       `INSERT INTO book_bought (customer_id, book_id, quantity,buy_date) VALUES (${customer_id}, ${book_id}, ${quantity},NOW())`,
     ];
     await sql.Transaction(querys);

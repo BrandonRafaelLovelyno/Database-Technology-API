@@ -7,6 +7,9 @@ const Select = ({ table, conditions }) =>
       if (err) {
         reject(err);
       }
+      if (!res || !res.rows) {
+        reject(new Error("Something went wrong on fetching data"));
+      }
       resolve(res.rows);
     });
   });
@@ -18,6 +21,9 @@ const Update = ({ table, conditions, value }) =>
       (err, res) => {
         if (err) {
           reject(err);
+        }
+        if (!res || !res.rows) {
+          reject(new Error("Something went wrong on updating data"));
         }
         resolve(res.rows[0]);
       }
@@ -32,6 +38,9 @@ const Insert = ({ table, attribute, value }) =>
         if (err) {
           reject(err);
         }
+        if (!res || !res.rows) {
+          reject(new Error("Something went wrong on inserting data"));
+        }
         resolve(res.rows[0]);
       }
     );
@@ -44,6 +53,9 @@ const Delete = ({ table, conditions }) =>
       (err, res) => {
         if (err) {
           reject(err);
+        }
+        if (!res || !res.rows) {
+          reject(new Error("Something went wrong on deleting data"));
         }
         resolve(res.rows[0]);
       }

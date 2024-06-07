@@ -3,6 +3,7 @@ const { pool } = require("../db/index.js");
 
 const Select = ({ table, conditions }) =>
   new Promise((resolve, reject) => {
+    console.log(`SELECT * FROM ${table} WHERE ${conditions}`);
     query(`SELECT * FROM ${table} WHERE ${conditions}`, (err, res) => {
       if (err) {
         reject(err);
@@ -30,7 +31,7 @@ const Update = ({ table, conditions, value }) =>
     );
   });
 
-const Insert = ({ table, attribute, value }) =>
+const Insert = () =>
   new Promise((resolve, reject) => {
     query(
       `INSERT INTO ${table} ${attribute} VALUES ${value} RETURNING *`,

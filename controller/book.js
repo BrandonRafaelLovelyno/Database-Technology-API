@@ -5,7 +5,7 @@ const getBook = async (req, res, next) => {
     let conditions = "TRUE";
 
     Object.keys(req.query).forEach((key) => {
-      conditions += `${key} = 'AND ${req.query[key]} '`;
+      conditions += ` AND ${key} = '${req.query[key]}'`;
     });
 
     const books = await sql.Select({ table: "book", conditions });
@@ -47,7 +47,11 @@ const buyBook = async (req, res, next) => {
       `INSERT INTO book_bought (customer_id, book_id, quantity,buy_date) VALUES (${customer_id}, ${book_id}, ${quantity},NOW())`,
     ];
     await sql.Transaction(querys);
-    res.json({ message: "Book bought successfully" });
+    const book_bought = await sql.Select({
+      table: "book_bought",
+      conditions: `customer_id = ${customer_id} AND book_id = ${book_id}`,
+    });
+    res.json(book_bought);
   } catch (err) {
     next(err);
   }
@@ -93,7 +97,18 @@ const insertBook = async (req, res, next) => {
 
     await sql.Transaction(queries);
 
-    res.status(201).send("Book added");
+    let select_conditions = "TRUE";
+
+    Object.keys(book).forEach((key) => {
+      select_conditions += ` AND ${key} = '${book[key]}'`;
+    });
+
+    const insertedBook = await sql.Select({
+      table: "book",
+      conditions: select_conditions,
+    });
+
+    res.status(201).json(insertedBook);
   } catch (err) {
     next(err);
   }

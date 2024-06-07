@@ -31,7 +31,7 @@ const Update = ({ table, conditions, value }) =>
     );
   });
 
-const Insert = () =>
+const Insert = ({ table, attribute, value }) =>
   new Promise((resolve, reject) => {
     query(
       `INSERT INTO ${table} ${attribute} VALUES ${value} RETURNING *`,
